@@ -1,2 +1,2 @@
 FROM nginx
-COPY /root/index.html /usr/share/nginx/html
+COPY /var/lib/jenkins/index.html /usr/share/nginx/html
