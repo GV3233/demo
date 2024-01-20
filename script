@@ -1,0 +1,28 @@
+#!/bin/bash
+
+
+#Removing existing deb packages from tmp
+rm /tmp/scsm*.deb
+# Get the current server's IP address (assuming it's a Linux system)
+server_ip=$(hostname -I | awk '{print $1}')
+
+# Install required packages
+#sudo apt-get update
+sudo apt-get install -y auditd audispd-plugins libnl-utils
+
+# Download the latest deb file from the GCS bucket (assuming the GCS bucket name is consistent)
+gsutil cp gs://viq-st-na-d-automate/logrhythm/*.deb /tmp/
+
+# Install the downloaded deb file
+sudo dpkg -i /tmp/scsm*.deb
+
+# Modify the LogRhythm System Monitor Agent configuration
+sudo sed -i "s/Host=.*/Host=52.43.230.148/" /opt/logrhythm/scsm/config/scsm.ini
+sudo sed -i "s/ClientAddress=.*/ClientAddress=$server_ip/" /opt/logrhythm/scsm/config/scsm.ini
+
+# Restart the LogRhythm service
+sudo systemctl restart scsm
+
+# Clean up the downloaded deb file
+rm /tmp/scsm*.deb
+
